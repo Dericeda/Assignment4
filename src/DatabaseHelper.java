@@ -5,7 +5,6 @@ import java.util.List;
 public class DatabaseHelper {
     private static final String URL = "jdbc:mysql://localhost:3306/zoo";
     private static final String USER = "root"; // Замените на свой логин
-    private static final String PASSWORD = "password"; // Замените на свой пароль
 
     // Получение всех клеток
     public static List<Cage> getAllCages() {
