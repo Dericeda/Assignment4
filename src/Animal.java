@@ -1,13 +1,13 @@
 public class Animal {
     private String name;
     private boolean predator;
-    private String size;  // Small, Medium, Large
-    private int cageNumber; // Номер клетки, в которой находится животное
+    private int numberOfAnimals;
+    private int cageNumber;
 
-    public Animal(String name, boolean predator, String size, int cageNumber) {
+    public Animal(String name, boolean predator, int numberOfAnimals, int cageNumber) {
         this.name = name;
         this.predator = predator;
-        this.size = size;
+        this.numberOfAnimals = numberOfAnimals;
         this.cageNumber = cageNumber;
     }
 
@@ -19,8 +19,8 @@ public class Animal {
         return predator;
     }
 
-    public String getSize() {
-        return size;
+    public int getNumberOfAnimals() {
+        return numberOfAnimals;
     }
 
     public int getCageNumber() {
@@ -30,9 +30,8 @@ public class Animal {
     @Override
     public String toString() {
         return String.format(
-                "Name: %s, Predator: %s, Size: %s, Cage Number: %d",
-                name, predator ? "Yes" : "No", size, cageNumber
+                "Name: %s, Predator: %s, Number: %d, Cage Number: %d",
+                name, predator ? "Yes" : "No", numberOfAnimals, cageNumber
         );
     }
 }
-
