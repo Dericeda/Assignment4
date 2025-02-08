@@ -2,57 +2,42 @@ public class Cage {
     private String name;
     private int number;
     private String size;
+    private String animalSize;
     private int maxAnimals;
 
-    // Конструктор
-    public Cage(String name, int number, String size, int maxAnimals) {
+    public Cage(String name, int number, String size, String animalSize, int maxAnimals) {
         this.name = name;
         this.number = number;
         this.size = size;
+        this.animalSize = animalSize;
         this.maxAnimals = maxAnimals;
     }
 
-    // Геттеры и сеттеры
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public int getNumber() {
         return number;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
     public String getSize() {
         return size;
     }
 
-    public void setSize(String size) {
-        this.size = size;
+    public String getAnimalSize() {
+        return animalSize;
     }
 
     public int getMaxAnimals() {
         return maxAnimals;
     }
 
-    public void setMaxAnimals(int maxAnimals) {
-        this.maxAnimals = maxAnimals;
-    }
-
-    // Переопределение toString() для удобного вывода
     @Override
     public String toString() {
-        return "Cage{" +
-                "name='" + name + '\'' +
-                ", number=" + number +
-                ", size='" + size + '\'' +
-                ", maxAnimals=" + maxAnimals +
-                '}';
+        return String.format(
+                "Cage Name: %s, Number: %d, Size: %s, Animal Size Allowed: %s, Max Animals: %d",
+                name, number, size, animalSize, maxAnimals
+        );
     }
 }

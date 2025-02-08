@@ -1,36 +1,38 @@
 public class Animal {
     private String name;
     private boolean predator;
+    private String size;  // Small, Medium, Large
+    private int cageNumber; // Номер клетки, в которой находится животное
 
-    // Конструктор
-    public Animal(String name, boolean predator) {
+    public Animal(String name, boolean predator, String size, int cageNumber) {
         this.name = name;
         this.predator = predator;
+        this.size = size;
+        this.cageNumber = cageNumber;
     }
 
-    // Геттеры и сеттеры
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public boolean isPredator() {
         return predator;
     }
 
-    public void setPredator(boolean predator) {
-        this.predator = predator;
+    public String getSize() {
+        return size;
     }
 
-    // Переопределение toString() для удобного вывода
+    public int getCageNumber() {
+        return cageNumber;
+    }
+
     @Override
     public String toString() {
-        return "Animal{" +
-                "name='" + name + '\'' +
-                ", predator=" + predator +
-                '}';
+        return String.format(
+                "Name: %s, Predator: %s, Size: %s, Cage Number: %d",
+                name, predator ? "Yes" : "No", size, cageNumber
+        );
     }
 }
+
