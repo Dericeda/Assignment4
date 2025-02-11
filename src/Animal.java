@@ -1,3 +1,4 @@
+// Animal.java
 public class Animal {
     private String name;
     private boolean predator;
@@ -29,9 +30,8 @@ public class Animal {
 
     @Override
     public String toString() {
-        return String.format(
-                "Name: %s, Predator: %s, Number: %d, Cage Number: %d",
-                name, predator ? "Yes" : "No", numberOfAnimals, cageNumber
-        );
+        return String.format("Animal: %s, Predator: %s, Number: %d, Cage Number: %d",
+                name, predator ? "Yes" : "No", numberOfAnimals, cageNumber);
     }
 }
+

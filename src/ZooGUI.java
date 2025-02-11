@@ -1,37 +1,119 @@
+// ZooGUI.java
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
 public class ZooGUI extends JFrame {
-    private JTextField cageNameField, cageNumberField, maxAnimalsField;
+    // Поля для вкладки Zoos
+    private JTextField zooNameField, zooNumberField;
+    private JTextArea displayZoosArea;
+
+    // Поля для вкладки Cages
+    private JTextField cageNameField, cageNumberField, capacityField, cageZooNumberField;
     private JTextArea displayCagesArea;
 
-    private JTextField animalNameField, cageNumberFieldAnimals, numberOfAnimalsField;
+    // Поля для вкладки Animals
+    private JTextField animalNameField, animalNumberField, animalCageNumberField;
     private JCheckBox predatorCheckBox;
     private JTextArea displayAnimalsArea;
 
+    // Поля для вкладки Search Animals
     private JTextField searchAnimalField;
     private JTextArea searchResultArea;
 
+    // Поля для вкладки Update Animal
+    private JTextField oldAnimalNameField;
+    private JTextField newAnimalNameField, newAnimalNumberField, newAnimalCageNumberField;
+    private JCheckBox newPredatorCheckBox;
+
     public ZooGUI() {
         setTitle("Zoo Management System");
-        setSize(800, 600);
+        setSize(900, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JTabbedPane tabbedPane = new JTabbedPane();
 
+        // Добавляем вкладки
+        tabbedPane.addTab("Zoos", createZoosPanel());
         tabbedPane.addTab("Cages", createCagesPanel());
         tabbedPane.addTab("Animals", createAnimalsPanel());
         tabbedPane.addTab("Search Animals", createSearchAnimalsPanel());
+        tabbedPane.addTab("Update Animal", createUpdateAnimalPanel());
 
         add(tabbedPane);
         setVisible(true);
     }
 
-    // Вкладка для управления клетками
+    // Вкладка управления зоопарками
+    private JPanel createZoosPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+
+        inputPanel.add(new JLabel("Zoo Name:"));
+        zooNameField = new JTextField();
+        inputPanel.add(zooNameField);
+
+        inputPanel.add(new JLabel("Zoo Number:"));
+        zooNumberField = new JTextField();
+        inputPanel.add(zooNumberField);
+
+        JButton addZooButton = new JButton("Add Zoo");
+        inputPanel.add(addZooButton);
+
+        JButton deleteZooButton = new JButton("Delete Zoo");
+        inputPanel.add(deleteZooButton);
+
+        JButton loadZoosButton = new JButton("Load Zoos");
+        inputPanel.add(loadZoosButton);
+
+        panel.add(inputPanel, BorderLayout.NORTH);
+
+        displayZoosArea = new JTextArea();
+        displayZoosArea.setEditable(false);
+        panel.add(new JScrollPane(displayZoosArea), BorderLayout.CENTER);
+
+        // Обработчики кнопок для зоопарков
+        addZooButton.addActionListener(e -> {
+            try {
+                String name = zooNameField.getText().trim();
+                int number = Integer.parseInt(zooNumberField.getText().trim());
+                if (DatabaseHelper.findZooByNumber(number) != null) {
+                    JOptionPane.showMessageDialog(this, "Zoo with this number already exists!", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                Zoo zoo = new Zoo(number, name);
+                DatabaseHelper.addZoo(zoo);
+                JOptionPane.showMessageDialog(this, "Zoo added successfully!");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Invalid Zoo Number!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        deleteZooButton.addActionListener(e -> {
+            try {
+                int number = Integer.parseInt(zooNumberField.getText().trim());
+                DatabaseHelper.deleteZoo(number);
+                JOptionPane.showMessageDialog(this, "Zoo deleted successfully (if it had no cages)!");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Invalid Zoo Number!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        loadZoosButton.addActionListener(e -> {
+            List<Zoo> zoos = DatabaseHelper.getAllZoos();
+            displayZoosArea.setText("Zoos in the system:\n");
+            for (Zoo zoo : zoos) {
+                displayZoosArea.append(zoo.toString() + "\n");
+            }
+        });
+
+        return panel;
+    }
+
+    // Вкладка управления клетками
     private JPanel createCagesPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        JPanel inputPanel = new JPanel(new GridLayout(6, 1, 5, 5));
+        JPanel inputPanel = new JPanel(new GridLayout(7, 2, 10, 10));
 
         inputPanel.add(new JLabel("Cage Name:"));
         cageNameField = new JTextField();
@@ -41,14 +123,22 @@ public class ZooGUI extends JFrame {
         cageNumberField = new JTextField();
         inputPanel.add(cageNumberField);
 
-        inputPanel.add(new JLabel("Max Animals:"));
-        maxAnimalsField = new JTextField();
-        inputPanel.add(maxAnimalsField);
+        inputPanel.add(new JLabel("Total Capacity:"));
+        capacityField = new JTextField();
+        inputPanel.add(capacityField);
+
+        inputPanel.add(new JLabel("Zoo Number:"));
+        cageZooNumberField = new JTextField();
+        inputPanel.add(cageZooNumberField);
 
         JButton addCageButton = new JButton("Add Cage");
-        JButton deleteCageButton = new JButton("Delete Cage");
         inputPanel.add(addCageButton);
+
+        JButton deleteCageButton = new JButton("Delete Cage");
         inputPanel.add(deleteCageButton);
+
+        JButton loadCagesButton = new JButton("Load Cages");
+        inputPanel.add(loadCagesButton);
 
         panel.add(inputPanel, BorderLayout.NORTH);
 
@@ -56,21 +146,26 @@ public class ZooGUI extends JFrame {
         displayCagesArea.setEditable(false);
         panel.add(new JScrollPane(displayCagesArea), BorderLayout.CENTER);
 
-        JButton loadCagesButton = new JButton("Load Cages");
-        panel.add(loadCagesButton, BorderLayout.SOUTH);
-
-        // Обработчики кнопок
+        // Обработчики кнопок для клеток
         addCageButton.addActionListener(e -> {
             try {
                 String name = cageNameField.getText().trim();
                 int number = Integer.parseInt(cageNumberField.getText().trim());
-                int maxAnimals = Integer.parseInt(maxAnimalsField.getText().trim());
-
-                Cage cage = new Cage(name, number, maxAnimals);
+                int totalCapacity = Integer.parseInt(capacityField.getText().trim());
+                int zooNumber = Integer.parseInt(cageZooNumberField.getText().trim());
+                if (DatabaseHelper.findZooByNumber(zooNumber) == null) {
+                    JOptionPane.showMessageDialog(this, "Zoo not found! Create a zoo first.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (DatabaseHelper.findCageByNumber(number) != null) {
+                    JOptionPane.showMessageDialog(this, "Cage with this number already exists!", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                Cage cage = new Cage(number, name, totalCapacity, zooNumber);
                 DatabaseHelper.addCage(cage);
                 JOptionPane.showMessageDialog(this, "Cage added successfully!");
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Invalid input!", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid input in Cage fields!", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -78,7 +173,7 @@ public class ZooGUI extends JFrame {
             try {
                 int number = Integer.parseInt(cageNumberField.getText().trim());
                 DatabaseHelper.deleteCage(number);
-                JOptionPane.showMessageDialog(this, "Cage deleted successfully!");
+                JOptionPane.showMessageDialog(this, "Cage deleted successfully (if it had no animals)!");
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Invalid Cage Number!", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -86,22 +181,19 @@ public class ZooGUI extends JFrame {
 
         loadCagesButton.addActionListener(e -> {
             List<Cage> cages = DatabaseHelper.getAllCages();
-            displayCagesArea.setText("Cages in the Zoo:\n");
+            displayCagesArea.setText("Cages in the system:\n");
             for (Cage cage : cages) {
-                displayCagesArea.append(
-                        String.format("Cage Name: %s, Number: %d, Max Animals: %d\n",
-                                cage.getName(), cage.getNumber(), cage.getMaxAnimals())
-                );
+                displayCagesArea.append(cage.toString() + "\n");
             }
         });
 
         return panel;
     }
 
-    // Вкладка для управления животными
+    // Вкладка управления животными (добавление/удаление)
     private JPanel createAnimalsPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        JPanel inputPanel = new JPanel(new GridLayout(7, 1, 5, 5));
+        JPanel inputPanel = new JPanel(new GridLayout(8, 2, 10, 10));
 
         inputPanel.add(new JLabel("Animal Name:"));
         animalNameField = new JTextField();
@@ -112,18 +204,20 @@ public class ZooGUI extends JFrame {
         inputPanel.add(predatorCheckBox);
 
         inputPanel.add(new JLabel("Number of Animals:"));
-        numberOfAnimalsField = new JTextField();
-        inputPanel.add(numberOfAnimalsField);
+        animalNumberField = new JTextField();
+        inputPanel.add(animalNumberField);
 
         inputPanel.add(new JLabel("Cage Number:"));
-        cageNumberFieldAnimals = new JTextField();
-        inputPanel.add(cageNumberFieldAnimals);
+        animalCageNumberField = new JTextField();
+        inputPanel.add(animalCageNumberField);
 
         JButton addAnimalButton = new JButton("Add Animal");
-        JButton deleteAnimalButton = new JButton("Delete Animal");
-        JButton loadAnimalsButton = new JButton("Load Animals");
         inputPanel.add(addAnimalButton);
+
+        JButton deleteAnimalButton = new JButton("Delete Animal");
         inputPanel.add(deleteAnimalButton);
+
+        JButton loadAnimalsButton = new JButton("Load Animals");
         inputPanel.add(loadAnimalsButton);
 
         panel.add(inputPanel, BorderLayout.NORTH);
@@ -132,43 +226,42 @@ public class ZooGUI extends JFrame {
         displayAnimalsArea.setEditable(false);
         panel.add(new JScrollPane(displayAnimalsArea), BorderLayout.CENTER);
 
-        // Обработчики кнопок
+        // Обработчики для животных
         addAnimalButton.addActionListener(e -> {
             try {
                 String name = animalNameField.getText().trim();
                 boolean predator = predatorCheckBox.isSelected();
-                int numberOfAnimals = Integer.parseInt(numberOfAnimalsField.getText().trim());
-                int cageNumber = Integer.parseInt(cageNumberFieldAnimals.getText().trim());
+                int numberOfAnimals = Integer.parseInt(animalNumberField.getText().trim());
+                int cageNumber = Integer.parseInt(animalCageNumberField.getText().trim());
 
-                // Проверка существования клетки
                 Cage cage = DatabaseHelper.findCageByNumber(cageNumber);
                 if (cage == null) {
                     JOptionPane.showMessageDialog(this, "Cage not found!", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
-                // Проверка вместимости клетки
-                if (cage.getMaxAnimals() < numberOfAnimals) {
+                if (cage.getFreeSpaces() < numberOfAnimals) {
                     JOptionPane.showMessageDialog(this, "Not enough space in the cage!", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
-                cage.setMaxAnimals(cage.getMaxAnimals() - numberOfAnimals); // Уменьшаем Max Animals
-                DatabaseHelper.updateCage(cage);  // Обновляем клетку в базе данных
+                // Обновляем количество животных в клетке
+                cage.addAnimals(numberOfAnimals);
+                DatabaseHelper.updateCage(cage);
 
                 Animal animal = new Animal(name, predator, numberOfAnimals, cageNumber);
                 DatabaseHelper.addAnimal(animal);
                 JOptionPane.showMessageDialog(this, "Animal(s) added successfully!");
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Invalid input!", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid input in Animal fields!", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
         deleteAnimalButton.addActionListener(e -> {
             try {
                 String name = animalNameField.getText().trim();
-                DatabaseHelper.deleteAnimal(name);
-                JOptionPane.showMessageDialog(this, "Animal deleted successfully!");
+                DatabaseHelper.deleteAnimalByName(name);
+                JOptionPane.showMessageDialog(this, "Animal(s) deleted successfully!");
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error deleting animal!", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -176,45 +269,38 @@ public class ZooGUI extends JFrame {
 
         loadAnimalsButton.addActionListener(e -> {
             List<Animal> animals = DatabaseHelper.getAllAnimals();
-            displayAnimalsArea.setText("Animals in the Zoo:\n");
+            displayAnimalsArea.setText("Animals in the system:\n");
             for (Animal animal : animals) {
-                displayAnimalsArea.append(
-                        String.format("Name: %s, Predator: %s, Number: %d, Cage Number: %d\n",
-                                animal.getName(),
-                                animal.isPredator() ? "Yes" : "No",
-                                animal.getNumberOfAnimals(),
-                                animal.getCageNumber())
-                );
+                displayAnimalsArea.append(animal.toString() + "\n");
             }
         });
 
         return panel;
     }
 
-    // Вкладка для поиска животных
+    // Вкладка поиска животного по имени
     private JPanel createSearchAnimalsPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        JPanel searchPanel = new JPanel(new GridLayout(3, 1, 5, 5));
+        JPanel inputPanel = new JPanel(new FlowLayout());
 
-        searchPanel.add(new JLabel("Enter Animal Name:"));
-        searchAnimalField = new JTextField();
-        searchPanel.add(searchAnimalField);
+        inputPanel.add(new JLabel("Animal Name to Search:"));
+        searchAnimalField = new JTextField(20);
+        inputPanel.add(searchAnimalField);
 
         JButton searchButton = new JButton("Search");
-        searchPanel.add(searchButton);
+        inputPanel.add(searchButton);
 
-        panel.add(searchPanel, BorderLayout.NORTH);
+        panel.add(inputPanel, BorderLayout.NORTH);
 
         searchResultArea = new JTextArea();
         searchResultArea.setEditable(false);
         panel.add(new JScrollPane(searchResultArea), BorderLayout.CENTER);
 
-        // Обработчик кнопки поиска
         searchButton.addActionListener(e -> {
             String name = searchAnimalField.getText().trim();
             Animal animal = DatabaseHelper.findAnimalByName(name);
             if (animal != null) {
-                searchResultArea.setText("Animal Found:\n" + animal);
+                searchResultArea.setText("Animal found:\n" + animal.toString());
             } else {
                 searchResultArea.setText("Animal not found.");
             }
@@ -223,7 +309,67 @@ public class ZooGUI extends JFrame {
         return panel;
     }
 
+    // Вкладка обновления информации о животном
+    private JPanel createUpdateAnimalPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JPanel inputPanel = new JPanel(new GridLayout(10, 2, 10, 10));
+
+        inputPanel.add(new JLabel("Existing Animal Name:"));
+        oldAnimalNameField = new JTextField();
+        inputPanel.add(oldAnimalNameField);
+
+        inputPanel.add(new JLabel("New Animal Name:"));
+        newAnimalNameField = new JTextField();
+        inputPanel.add(newAnimalNameField);
+
+        inputPanel.add(new JLabel("New Predator Status:"));
+        newPredatorCheckBox = new JCheckBox();
+        inputPanel.add(newPredatorCheckBox);
+
+        inputPanel.add(new JLabel("New Number of Animals:"));
+        newAnimalNumberField = new JTextField();
+        inputPanel.add(newAnimalNumberField);
+
+        inputPanel.add(new JLabel("New Cage Number:"));
+        newAnimalCageNumberField = new JTextField();
+        inputPanel.add(newAnimalCageNumberField);
+
+        JButton updateAnimalButton = new JButton("Update Animal");
+        inputPanel.add(updateAnimalButton);
+
+        panel.add(inputPanel, BorderLayout.NORTH);
+
+        JTextArea updateResultArea = new JTextArea();
+        updateResultArea.setEditable(false);
+        panel.add(new JScrollPane(updateResultArea), BorderLayout.CENTER);
+
+        updateAnimalButton.addActionListener(e -> {
+            try {
+                String oldName = oldAnimalNameField.getText().trim();
+                String newName = newAnimalNameField.getText().trim();
+                boolean newPredator = newPredatorCheckBox.isSelected();
+                int newNumber = Integer.parseInt(newAnimalNumberField.getText().trim());
+                int newCageNumber = Integer.parseInt(newAnimalCageNumberField.getText().trim());
+
+                // Проверяем, что новая клетка существует
+                Cage newCage = DatabaseHelper.findCageByNumber(newCageNumber);
+                if (newCage == null) {
+                    updateResultArea.setText("No such cage exists for update.");
+                    return;
+                }
+
+                Animal updatedAnimal = new Animal(newName, newPredator, newNumber, newCageNumber);
+                DatabaseHelper.updateAnimal(oldName, updatedAnimal);
+                updateResultArea.setText("Animal updated successfully (if there was enough space)!");
+            } catch (NumberFormatException ex) {
+                updateResultArea.setText("Invalid input in update fields.");
+            }
+        });
+
+        return panel;
+    }
+
     public static void main(String[] args) {
-        new ZooGUI();
+        SwingUtilities.invokeLater(() -> new ZooGUI());
     }
 }
