@@ -1,27 +1,26 @@
-// ZooGUI.java
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
 public class ZooGUI extends JFrame {
-    // Поля для вкладки Zoos
+
     private JTextField zooNameField, zooNumberField;
     private JTextArea displayZoosArea;
 
-    // Поля для вкладки Cages
+
     private JTextField cageNameField, cageNumberField, capacityField, cageZooNumberField;
     private JTextArea displayCagesArea;
 
-    // Поля для вкладки Animals
+
     private JTextField animalNameField, animalNumberField, animalCageNumberField;
     private JCheckBox predatorCheckBox;
     private JTextArea displayAnimalsArea;
 
-    // Поля для вкладки Search Animals
+
     private JTextField searchAnimalField;
     private JTextArea searchResultArea;
 
-    // Поля для вкладки Update Animal
+
     private JTextField oldAnimalNameField;
     private JTextField newAnimalNameField, newAnimalNumberField, newAnimalCageNumberField;
     private JCheckBox newPredatorCheckBox;
@@ -33,7 +32,7 @@ public class ZooGUI extends JFrame {
 
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        // Добавляем вкладки
+
         tabbedPane.addTab("Zoos", createZoosPanel());
         tabbedPane.addTab("Cages", createCagesPanel());
         tabbedPane.addTab("Animals", createAnimalsPanel());
@@ -44,7 +43,7 @@ public class ZooGUI extends JFrame {
         setVisible(true);
     }
 
-    // Вкладка управления зоопарками
+
     private JPanel createZoosPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         JPanel inputPanel = new JPanel(new GridLayout(5, 2, 10, 10));
@@ -72,7 +71,7 @@ public class ZooGUI extends JFrame {
         displayZoosArea.setEditable(false);
         panel.add(new JScrollPane(displayZoosArea), BorderLayout.CENTER);
 
-        // Обработчики кнопок для зоопарков
+
         addZooButton.addActionListener(e -> {
             try {
                 String name = zooNameField.getText().trim();
@@ -110,7 +109,7 @@ public class ZooGUI extends JFrame {
         return panel;
     }
 
-    // Вкладка управления клетками
+
     private JPanel createCagesPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         JPanel inputPanel = new JPanel(new GridLayout(7, 2, 10, 10));
@@ -146,7 +145,7 @@ public class ZooGUI extends JFrame {
         displayCagesArea.setEditable(false);
         panel.add(new JScrollPane(displayCagesArea), BorderLayout.CENTER);
 
-        // Обработчики кнопок для клеток
+
         addCageButton.addActionListener(e -> {
             try {
                 String name = cageNameField.getText().trim();
@@ -190,7 +189,7 @@ public class ZooGUI extends JFrame {
         return panel;
     }
 
-    // Вкладка управления животными (добавление/удаление)
+
     private JPanel createAnimalsPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         JPanel inputPanel = new JPanel(new GridLayout(8, 2, 10, 10));
@@ -226,7 +225,7 @@ public class ZooGUI extends JFrame {
         displayAnimalsArea.setEditable(false);
         panel.add(new JScrollPane(displayAnimalsArea), BorderLayout.CENTER);
 
-        // Обработчики для животных
+
         addAnimalButton.addActionListener(e -> {
             try {
                 String name = animalNameField.getText().trim();
@@ -243,7 +242,7 @@ public class ZooGUI extends JFrame {
                     JOptionPane.showMessageDialog(this, "Not enough space in the cage!", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                // Обновляем количество животных в клетке
+
                 cage.addAnimals(numberOfAnimals);
                 DatabaseHelper.updateCage(cage);
 
@@ -278,7 +277,7 @@ public class ZooGUI extends JFrame {
         return panel;
     }
 
-    // Вкладка поиска животного по имени
+
     private JPanel createSearchAnimalsPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         JPanel inputPanel = new JPanel(new FlowLayout());
@@ -309,7 +308,7 @@ public class ZooGUI extends JFrame {
         return panel;
     }
 
-    // Вкладка обновления информации о животном
+
     private JPanel createUpdateAnimalPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         JPanel inputPanel = new JPanel(new GridLayout(10, 2, 10, 10));
@@ -351,7 +350,7 @@ public class ZooGUI extends JFrame {
                 int newNumber = Integer.parseInt(newAnimalNumberField.getText().trim());
                 int newCageNumber = Integer.parseInt(newAnimalCageNumberField.getText().trim());
 
-                // Проверяем, что новая клетка существует
+
                 Cage newCage = DatabaseHelper.findCageByNumber(newCageNumber);
                 if (newCage == null) {
                     updateResultArea.setText("No such cage exists for update.");

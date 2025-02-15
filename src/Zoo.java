@@ -1,4 +1,3 @@
-// Zoo.java
 public class Zoo {
     private int number;
     private String name;

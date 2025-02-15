@@ -1,4 +1,3 @@
-// Animal.java
 public class Animal {
     private String name;
     private boolean predator;

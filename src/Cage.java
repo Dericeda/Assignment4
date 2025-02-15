@@ -1,10 +1,9 @@
-// Cage.java
 public class Cage {
     private int number;
     private String name;
-    private int totalCapacity;      // Изначальная вместимость
-    private int currentAnimals;     // Количество животных, уже размещённых в клетке
-    private int zooNumber;          // Номер зоопарка, к которому относится клетка
+    private int totalCapacity;
+    private int currentAnimals;
+    private int zooNumber;
 
     public Cage(int number, String name, int totalCapacity, int zooNumber) {
         this.number = number;
@@ -14,7 +13,7 @@ public class Cage {
         this.currentAnimals = 0;
     }
 
-    // Дополнительный конструктор для загрузки из БД (где известно количество уже размещённых животных)
+
     public Cage(int number, String name, int totalCapacity, int currentAnimals, int zooNumber) {
         this.number = number;
         this.name = name;
@@ -43,12 +42,12 @@ public class Cage {
         return zooNumber;
     }
 
-    // Свободных мест – это разница между вместимостью и уже размещёнными животными
+
     public int getFreeSpaces() {
         return totalCapacity - currentAnimals;
     }
 
-    // Добавление животных в клетку – проверка на переполнение
+
     public void addAnimals(int count) {
         if (currentAnimals + count <= totalCapacity) {
             currentAnimals += count;
@@ -57,16 +56,8 @@ public class Cage {
         }
     }
 
-    // Удаление животных из клетки (при удалении животного из БД)
-    public void removeAnimals(int count) {
-        if (currentAnimals - count >= 0) {
-            currentAnimals -= count;
-        } else {
-            throw new IllegalArgumentException("Not enough animals to remove!");
-        }
-    }
 
-    // Позволяет установить число занятых мест (при обновлении)
+
     public void setCurrentAnimals(int count) {
         if(count <= totalCapacity && count >= 0) {
             currentAnimals = count;

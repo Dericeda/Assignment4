@@ -1,14 +1,14 @@
-// DatabaseHelper.java
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class DatabaseHelper {
     private static final String URL = "jdbc:mysql://localhost:3306/zoo";
     private static final String USER = "root";
     private static final String PASSWORD = "Nurajudo007";  // ❗ Замените на свой пароль
 
-    // --------------- Операции с зоопарками ---------------
+
     public static void addZoo(Zoo zoo) {
         String query = "INSERT INTO zoos (number, name) VALUES (?, ?)";
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -58,17 +58,7 @@ public class DatabaseHelper {
         return null;
     }
 
-    public static void updateZoo(Zoo zoo) {
-        String query = "UPDATE zoos SET name = ? WHERE number = ?";
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, zoo.getName());
-            statement.setInt(2, zoo.getNumber());
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     public static void deleteZoo(int number) {
         // Перед удалением зоопарка проверяем, что в нём нет клеток
@@ -87,7 +77,7 @@ public class DatabaseHelper {
         }
     }
 
-    // --------------- Операции с клетками ---------------
+
     public static void addCage(Cage cage) {
         String query = "INSERT INTO cages (number, name, total_capacity, current_animals, zoo_number) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -185,7 +175,6 @@ public class DatabaseHelper {
     }
 
     public static void deleteCage(int number) {
-        // Перед удалением клетки проверяем, что в ней нет животных
         List<Animal> animals = getAnimalsInCage(number);
         if (!animals.isEmpty()) {
             System.out.println("Cannot delete cage: it contains animals.");
@@ -201,7 +190,7 @@ public class DatabaseHelper {
         }
     }
 
-    // --------------- Операции с животными ---------------
+
     public static void addAnimal(Animal animal) {
         String query = "INSERT INTO animals (name, predator, number_of_animals, cage_number) VALUES (?, ?, ?, ?)";
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -290,14 +279,7 @@ public class DatabaseHelper {
         return null;
     }
 
-    // Метод обновления животного с корректировкой заполненности клетки.
-    // Алгоритм:
-    // 1. Найти старую запись (oldAnimal) по имени (предполагаем, что имя уникально).
-    // 2. Если клетка не изменилась, то вычислить: newOccupancy = currentAnimals - oldCount + newCount.
-    //    Если новая занятость превышает вместимость – ошибка.
-    // 3. Если клетка изменилась – из старой клетки вычесть старую численность,
-    //    а в новой добавить новое число (проверив вместимость).
-    // 4. Обновить запись в таблице animals.
+
     public static void updateAnimal(String oldName, Animal updatedAnimal) {
         Animal oldAnimal = findAnimalByName(oldName);
         if (oldAnimal == null) {
